@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "listwarden"
+version = "0.1.0"
+description = "Keep awesome lists awesome: find dead, archived, renamed and stale entries, and check the links a PR adds and who is adding them (link-blast detection). CLI + GitHub Action."
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+license-files = ["LICENSE"]
+authors = [{name = "Mohammad Hamarsheh"}]
+requires-python = ">=3.9"
+dependencies = []
+keywords = ["awesome", "awesome-list", "link-checker", "link-rot", "github-action", "maintainers", "spam", "markdown", "curation"]
+classifiers = [
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Programming Language :: Python :: 3",
+  "Topic :: Text Processing :: Markup :: Markdown",
+  "Topic :: Software Development :: Quality Assurance",
+]
+
+[project.urls]
+Homepage = "https://github.com/hamarshehmhmd/listwarden"
+Issues = "https://github.com/hamarshehmhmd/listwarden/issues"
+
+[project.scripts]
+listwarden = "listwarden.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

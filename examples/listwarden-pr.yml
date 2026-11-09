@@ -1,0 +1,20 @@
+# .github/workflows/listwarden.yml in your awesome list
+name: listwarden
+on:
+  pull_request_target:        # runs with the base repo's token; listwarden only reads the PR via the API, never checks out its code
+    types: [opened, synchronize, reopened]
+  schedule:
+    - cron: "17 6 * * 1"      # weekly link-rot audit
+  workflow_dispatch:
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  listwarden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5     # base branch only (pull_request_target default); needed for audit mode
+      - uses: hamarshehmhmd/listwarden@v0.1.0
+        with:
+          fail-on: none               # comment only; set to 'fail' to block dead/duplicate/archived links
+          args: ""                    # e.g. --min-stars 25 --blast-threshold 5

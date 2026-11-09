@@ -1,0 +1,52 @@
+name: listwarden
+description: Keep an awesome list healthy. On PRs, post facts about each added link and its submitter; on a schedule, report dead, archived, renamed and stale entries.
+branding:
+  icon: list
+  color: green
+inputs:
+  mode:
+    description: "'pr' (check the links this pull request adds) or 'audit' (check the whole list). Default: pr on pull_request events, audit otherwise."
+    default: ""
+  file:
+    description: List file for audit mode
+    default: README.md
+  comment:
+    description: "In pr mode, post/update one sticky comment on the PR ('true'/'false'). Needs pull-requests: write."
+    default: "true"
+  fail-on:
+    description: "pr mode: fail | warn | none. audit mode: comma list of kinds (dead,archived,...), any or none."
+    default: ""
+  args:
+    description: Extra CLI arguments (e.g. --min-stars 25 --blast-threshold 5, or --no-web --stale-months 36)
+    default: ""
+  token:
+    description: GitHub token
+    default: ${{ github.token }}
+runs:
+  using: composite
+  steps:
+    - shell: bash
+      run: python3 -m pip install --quiet "${{ github.action_path }}"
+    - shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        LW_MODE: ${{ inputs.mode }}
+        LW_FILE: ${{ inputs.file }}
+        LW_COMMENT: ${{ inputs.comment }}
+        LW_FAIL: ${{ inputs.fail-on }}
+        LW_ARGS: ${{ inputs.args }}
+        LW_EVENT: ${{ github.event_name }}
+        LW_PR: ${{ github.event.pull_request.number }}
+        LW_REPO: ${{ github.repository }}
+      run: |
+        mode="$LW_MODE"
+        if [ -z "$mode" ]; then
+          case "$LW_EVENT" in pull_request|pull_request_target) mode=pr ;; *) mode=audit ;; esac
+        fi
+        if [ "$mode" = pr ]; then
+          extra=""
+          [ "$LW_COMMENT" = "true" ] && extra="--comment"
+          listwarden --color always pr "$LW_REPO" "$LW_PR" $extra --fail-on "${LW_FAIL:-fail}" $LW_ARGS
+        else
+          listwarden --color always audit "$LW_FILE" --fail-on "${LW_FAIL:-dead}" --limit 0 $LW_ARGS
+        fi

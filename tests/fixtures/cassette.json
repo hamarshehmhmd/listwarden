@@ -1,0 +1,44 @@
+{
+  "repos": {
+    "acme/goodlib": {"nameWithOwner": "acme/goodlib", "url": "https://github.com/acme/goodlib", "isArchived": false, "isFork": false, "isDisabled": false, "stargazerCount": 1200, "createdAt": "2019-01-01T00:00:00Z", "pushedAt": "2026-11-01T00:00:00Z", "description": "good", "licenseInfo": {"spdxId": "MIT"}, "owner": {"login": "acme"}, "defaultBranchRef": {"target": {"committedDate": "2026-11-01T00:00:00Z", "history": {"totalCount": 900}}}},
+    "acme/oldlib": {"nameWithOwner": "acme/oldlib", "url": "https://github.com/acme/oldlib", "isArchived": true, "isFork": false, "isDisabled": false, "stargazerCount": 300, "createdAt": "2014-01-01T00:00:00Z", "pushedAt": "2020-05-01T00:00:00Z", "licenseInfo": {"spdxId": "MIT"}, "owner": {"login": "acme"}, "defaultBranchRef": {"target": {"committedDate": "2020-05-01T00:00:00Z", "history": {"totalCount": 120}}}},
+    "zeit/widgets": {"nameWithOwner": "vercel/widgets", "url": "https://github.com/vercel/widgets", "isArchived": false, "isFork": false, "isDisabled": false, "stargazerCount": 5000, "createdAt": "2016-01-01T00:00:00Z", "pushedAt": "2026-10-30T00:00:00Z", "licenseInfo": {"spdxId": "Apache-2.0"}, "owner": {"login": "vercel"}, "defaultBranchRef": {"target": {"committedDate": "2026-10-30T00:00:00Z", "history": {"totalCount": 4000}}}},
+    "acme/sleepy": {"nameWithOwner": "acme/sleepy", "url": "https://github.com/acme/sleepy", "isArchived": false, "isFork": true, "isDisabled": false, "stargazerCount": 40, "createdAt": "2018-01-01T00:00:00Z", "pushedAt": "2023-09-01T00:00:00Z", "licenseInfo": null, "owner": {"login": "acme"}, "defaultBranchRef": {"target": {"committedDate": "2023-09-01T00:00:00Z", "history": {"totalCount": 30}}}},
+    "acme/tabletool": {"nameWithOwner": "acme/tabletool", "url": "https://github.com/acme/tabletool", "isArchived": false, "isFork": false, "isDisabled": false, "stargazerCount": 77, "createdAt": "2021-01-01T00:00:00Z", "pushedAt": "2026-09-01T00:00:00Z", "licenseInfo": {"spdxId": "MIT"}, "owner": {"login": "acme"}, "defaultBranchRef": {"target": {"committedDate": "2026-09-01T00:00:00Z", "history": {"totalCount": 60}}}},
+    "newbie/shinytool": {"nameWithOwner": "newbie/shinytool", "url": "https://github.com/newbie/shinytool", "isArchived": false, "isFork": false, "isDisabled": false, "stargazerCount": 2, "createdAt": "2026-11-03T00:00:00Z", "pushedAt": "2026-11-05T00:00:00Z", "licenseInfo": null, "owner": {"login": "newbie"}, "defaultBranchRef": {"target": {"committedDate": "2026-11-05T00:00:00Z", "history": {"totalCount": 3}}}}
+  },
+  "HEAD https://widgets.example.com/": {"status": 200},
+  "HEAD http://old.example.org/docs": {"status": 301, "headers": {"Location": "https://docs.example.com/"}},
+  "HEAD https://docs.example.com/": {"status": 200},
+  "HEAD https://blog.example.net/post": {"status": 404},
+  "GET https://blog.example.net/post": {"status": 404},
+  "HEAD https://old.example.org/docs": {"status": 404},
+  "GET https://old.example.org/docs": {"status": 404},
+  "HEAD https://shy.example.io/": {"status": 403},
+  "GET https://shy.example.io/": {"status": 403},
+  "HEAD https://shinytool.example.dev/": {"status": 200},
+
+  "GET https://api.github.com/repos/lists/awesome-widgets/pulls/42": {"json": {"title": "Add shinytool", "user": {"login": "newbie"}, "base": {"sha": "abc123"}, "head": {"sha": "def456"}}},
+  "GET https://api.github.com/repos/lists/awesome-widgets/pulls/42/files?per_page=100&page=1": {"json": [
+    {"filename": "README.md", "status": "modified", "patch": "@@ -12,6 +12,8 @@\n - [goodlib](https://github.com/acme/goodlib) - Healthy and active.\n+- [shinytool](https://github.com/newbie/shinytool) - The best AI widget tool.\n+- [goodlib fork](https://github.com/acme/goodlib) - again.\n-- [Old Docs](http://old.example.org/docs) - Moved.\n+- [Old Docs](http://old.example.org/docs) - Moved permanently!\n"},
+    {"filename": "logo.png", "status": "added"}
+  ]},
+  "GET https://api.github.com/repos/lists/awesome-widgets/contents/README.md?ref=abc123": {"json": {"encoding": "base64", "content": "LSBbZ29vZGxpYl0oaHR0cHM6Ly9naXRodWIuY29tL2FjbWUvZ29vZGxpYikgLSBIZWFsdGh5IGFuZCBhY3RpdmUuCg=="}},
+  "GET https://api.github.com/repos/newbie/shinytool/contributors?anon=1&per_page=1": {"json": [{"login": "newbie"}]},
+  "GET https://api.github.com/repos/acme/goodlib/contributors?anon=1&per_page=1": {"json": [{"login": "a"}], "headers": {"Link": "<https://api.github.com/repositories/1/contributors?anon=1&per_page=1&page=2>; rel=\"next\", <https://api.github.com/repositories/1/contributors?anon=1&per_page=1&page=57>; rel=\"last\""}},
+  "GET https://api.github.com/repos/acme/goodlib/contributors?per_page=100": {"json": [{"login": "a"}]},
+  "GET https://api.github.com/users/newbie": {"json": {"login": "newbie", "created_at": "2026-10-20T00:00:00Z", "public_repos": 9}},
+  "GET https://api.github.com/search/issues?q=is%3Apr%20author%3Anewbie%20created%3A%3E%3D2026-11-02&per_page=100": {"json": {"total_count": 14, "items": [
+    {"repository_url": "https://api.github.com/repos/a1/awesome-ai"}, {"repository_url": "https://api.github.com/repos/a2/awesome-tools"},
+    {"repository_url": "https://api.github.com/repos/a3/awesome-python"}, {"repository_url": "https://api.github.com/repos/a4/awesome-go"},
+    {"repository_url": "https://api.github.com/repos/a5/awesome-selfhosted"}, {"repository_url": "https://api.github.com/repos/a6/awesome-devtools"},
+    {"repository_url": "https://api.github.com/repos/a7/awesome-cli"}, {"repository_url": "https://api.github.com/repos/a8/awesome-react"},
+    {"repository_url": "https://api.github.com/repos/a9/Awesome-LLM"}, {"repository_url": "https://api.github.com/repos/a10/awesome-mac"},
+    {"repository_url": "https://api.github.com/repos/a11/awesome-free"}, {"repository_url": "https://api.github.com/repos/newbie/shinytool"},
+    {"repository_url": "https://api.github.com/repos/lists/awesome-widgets"}, {"repository_url": "https://api.github.com/repos/a1/awesome-ai"}
+  ]}},
+  "GET https://api.github.com/search/issues?q=is%3Apr%20author%3Anewbie%20%22newbie/shinytool%22&per_page=1": {"json": {"total_count": 23, "items": []}},
+  "GET https://api.github.com/search/issues?q=is%3Apr%20author%3Anewbie%20%22acme/goodlib%22&per_page=1": {"json": {"total_count": 1, "items": []}},
+  "GET https://api.github.com/repos/lists/awesome-widgets/issues/42/comments?per_page=100": {"json": [{"id": 7, "body": "nice"}]},
+  "POST https://api.github.com/repos/lists/awesome-widgets/issues/42/comments": {"status": 201, "json": {"html_url": "https://github.com/lists/awesome-widgets/pull/42#issuecomment-1"}}
+}

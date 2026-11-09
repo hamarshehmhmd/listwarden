@@ -1,0 +1,90 @@
+name: CI
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.10", "3.11", "3.12", "3.13"]
+        include:
+          - os: ubuntu-22.04
+            python: "3.9"
+          - os: macos-latest
+            python: "3.13"
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install . pytest
+      - run: python -m pytest -q -rs
+
+  live-github:
+    name: live audit + PR check against GitHub
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+      - run: python -m pip install .
+      - name: audit a list with known-renamed, archived and deleted repos
+        run: |
+          cat > /tmp/live.md <<'MD'
+          # Live
+          - [next.js](https://github.com/zeit/next.js) - renamed org
+          - [atom](https://github.com/atom/atom) - archived
+          - [missing](https://github.com/hamarshehmhmd/this-repo-does-not-exist-404) - deleted
+          - [python](https://github.com/python/cpython) - healthy
+          - [example](https://example.com/) - healthy web link
+          MD
+          set +e; listwarden --color always audit /tmp/live.md; rc=$?; set -e
+          test "$rc" -eq 1
+          listwarden audit /tmp/live.md --format json --fail-on none > /tmp/a.json
+          python - <<'PY'
+          import json
+          d = json.load(open("/tmp/a.json"))
+          k = {(f["repo"], f["kind"]) for f in d["findings"]}
+          print(k)
+          assert ("zeit/next.js", "renamed") in k
+          assert ("atom/atom", "archived") in k
+          assert ("hamarshehmhmd/this-repo-does-not-exist-404", "dead") in k
+          assert not any(r == "python/cpython" for r, _ in k)
+          PY
+          listwarden fix /tmp/live.md --write
+          grep -q "github.com/vercel/next.js" /tmp/live.md
+      - name: audit a real list straight from GitHub (informational)
+        run: listwarden --color always audit sindresorhus/awesome-nodejs --no-web --fail-on none --limit 15
+      - name: check a real PR (informational)
+        run: listwarden --color always pr https://github.com/sindresorhus/awesome-nodejs/pull/1 --fail-on none || true
+
+  install-script:
+    name: one-line install
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: LISTWARDEN_REF=${{ github.sha }} sh install.sh
+      - run: |
+          export PATH="$HOME/.local/bin:${PIPX_BIN_DIR:-/opt/pipx_bin}:$PATH"
+          listwarden --version
+          printf -- '- [cpython](https://github.com/python/cpython)\n' > /tmp/one.md
+          GITHUB_TOKEN=${{ github.token }} listwarden audit /tmp/one.md
+
+  action:
+    name: GitHub Action (audit mode)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: |
+          printf -- '# t\n- [cpython](https://github.com/python/cpython)\n- [atom](https://github.com/atom/atom)\n' > ci-list.md
+      - uses: ./
+        with:
+          mode: audit
+          file: ci-list.md
+          fail-on: dead
